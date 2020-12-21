@@ -1,5 +1,6 @@
 import * as LoadingActionTypes from '../actionTypes/loading';
-import { Action } from 'redux';
+
+import { RootAction } from '../actionCreators';
 
 export interface ILoadingState {
   isLoading: boolean;
@@ -9,7 +10,7 @@ export const initialState = {
   isLoading: false,
 };
 
-export function loading(state: ILoadingState = initialState, action: any): ILoadingState {
+export function loading(state: ILoadingState = initialState, action: RootAction): ILoadingState {
   switch (action.type) {
     case LoadingActionTypes.START_LOADING: {
       return {

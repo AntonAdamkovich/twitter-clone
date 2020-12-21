@@ -2,22 +2,13 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
-import { Paper } from '@material-ui/core';
-import { TextField, Button } from '@material-ui/core';
-
+import { Paper, Button } from '@material-ui/core';
 import TextInput from '../../../components/TextInput';
 
-export interface ILoginFormValues {
-  username: string;
-  password: string;
-}
-
-export interface ILoginProps {
-  onSubmit: (values: ILoginProps) => void;
-}
+import { ILoginProps, ILoginFormValues } from './interfaces';
 
 export default function({ onSubmit }: ILoginProps) {
-  const { handleSubmit, register } = useForm<ILoginFormValues>({
+  const { handleSubmit, register, errors, ...sdata } = useForm<ILoginFormValues>({
     mode: 'onBlur',
   });
 
@@ -27,8 +18,8 @@ export default function({ onSubmit }: ILoginProps) {
         <TextInput
           name="username"
           label="Username"
+          errorMessage={errors.username?.message}
           placeholder="Enter you username"
-          // helperText="something"
           ref={register({
             required: 'Please enter your username',
           })}
@@ -36,13 +27,13 @@ export default function({ onSubmit }: ILoginProps) {
         <TextInput
           name="password"
           label="Password"
+          errorMessage={errors.password?.message}
           placeholder="Enter you password"
-          helperText="something"
           ref={register({
             required: 'Please enter your password',
           })}
         />
-        <Button>submit</Button>
+        <Button type="submit">submit</Button>
       </StyledForm>
     </StyledPaper>
   )
@@ -55,4 +46,5 @@ const StyledForm = styled.form`
 
 const StyledPaper = styled(Paper)`
   padding: 25px;
+  width: 100%;
 `;

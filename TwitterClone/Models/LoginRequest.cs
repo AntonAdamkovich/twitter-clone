@@ -4,10 +4,10 @@ namespace TwitterClone.Models
 {
     public class LoginRequest
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required")]
         [EmailAddress]
         public string Username { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
     }
 }

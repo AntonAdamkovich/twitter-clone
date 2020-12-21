@@ -2,22 +2,13 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
-import { Paper } from '@material-ui/core';
-import { TextField, Button } from '@material-ui/core';
-
+import { Paper, Button } from '@material-ui/core';
 import TextInput from '../../../components/TextInput';
 
-export interface IRegistrationFormValues {
-  username: string;
-  password: string;
-}
-
-export interface IRegistrationProps {
-  onSubmit: (values: IRegistrationFormValues) => void;
-}
+import { IRegistrationProps, IRegistrationFormValues } from './interfaces';
 
 export default function({ onSubmit }: IRegistrationProps) {
-  const { handleSubmit, register } = useForm<IRegistrationFormValues>({
+  const { handleSubmit, register, errors } = useForm<IRegistrationFormValues>({
     mode: 'onBlur',
   });
 
@@ -25,26 +16,29 @@ export default function({ onSubmit }: IRegistrationProps) {
     <StyledPaper>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <TextInput
-          name="first-name"
+          name="firstName"
           label="First name"
           placeholder="Enter you first name"
+          errorMessage={errors.firstName?.message}
           ref={register({
             required: 'Please enter your first name',
           })}
         />
         <TextInput
-          name="last-name"
+          name="lastName"
           label="Last name"
           placeholder="Enter you last name"
+          errorMessage={errors.lastName?.message}
           ref={register({
             required: 'Please enter your last name',
           })}
         />
         <TextInput
           type="date"
-          name="date of birth"
+          name="dateOfBirth"
           label="Date of birth"
           placeholder="Enter you date of birthe"
+          errorMessage={errors.dateOfBirth?.message}
           ref={register({
             required: 'Please enter your last name',
           })}
@@ -53,6 +47,7 @@ export default function({ onSubmit }: IRegistrationProps) {
           name="username"
           label="Username"
           placeholder="Enter you username"
+          errorMessage={errors.username?.message}
           ref={register({
             required: 'Please enter your username',
           })}
@@ -61,15 +56,16 @@ export default function({ onSubmit }: IRegistrationProps) {
           name="password"
           label="Password"
           placeholder="Enter you password"
+          errorMessage={errors.password?.message}
           ref={register({
             required: 'Please enter your password',
           })}
         />
         <TextInput
-          name="password-confirmation"
+          name="passwordConfirmation"
           label="Password confirmation"
-          placeholder="Enter you password confirmation"
-          helperText="Enter your password one more time"
+          placeholder="Confirm your password"
+          errorMessage={errors.passwordConfirmation?.message}
           ref={register({
             required: 'Please enter your password confirmation',
           })}
@@ -87,4 +83,5 @@ const StyledForm = styled.form`
 
 const StyledPaper = styled(Paper)`
   padding: 25px;
+  width: 100%;
 `;
