@@ -19,7 +19,6 @@ namespace TwitterClone.Services.AuthService
             var domain = new Uri(_configuration.GetValue<string>("Auth:Domain"));
             var client = new AuthenticationApiClient(domain);
             _authenticationClient = client;
-            // client.
         }
 
         public async Task<SignupUserResponse> SignupUserAsync(RegistrationRequest userData)
