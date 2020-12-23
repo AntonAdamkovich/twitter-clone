@@ -1,12 +1,7 @@
-using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TwitterClone.Models;
-using Auth0.AuthenticationApi;
-using Auth0.AuthenticationApi.Models;
-using Auth0.Core.Exceptions;
 using TwitterClone.Services.AuthService;
 
 namespace TwitterClone.Controllers
