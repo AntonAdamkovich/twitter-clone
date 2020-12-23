@@ -1,6 +1,6 @@
 import * as LoadingActionTypes from '../actionTypes/loading';
 
-import { RootAction } from '../actionCreators';
+import { IRootAction } from '../actionCreators';
 
 export interface ILoadingState {
   isLoading: boolean;
@@ -10,7 +10,7 @@ export const initialState = {
   isLoading: false,
 };
 
-export function loading(state: ILoadingState = initialState, action: RootAction): ILoadingState {
+export function loading(state: ILoadingState = initialState, action: IRootAction): ILoadingState {
   switch (action.type) {
     case LoadingActionTypes.START_LOADING: {
       return {

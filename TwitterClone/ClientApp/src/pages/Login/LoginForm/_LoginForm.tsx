@@ -8,7 +8,7 @@ import TextInput from '../../../components/TextInput';
 import { ILoginProps, ILoginFormValues } from './interfaces';
 
 export default function({ onSubmit }: ILoginProps) {
-  const { handleSubmit, register, errors, ...sdata } = useForm<ILoginFormValues>({
+  const { handleSubmit, register, errors } = useForm<ILoginFormValues>({
     mode: 'onBlur',
   });
 

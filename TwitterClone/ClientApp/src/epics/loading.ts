@@ -5,9 +5,9 @@ import * as LoginActionTypes from '../actionTypes/pages/login';
 import * as RegistrationActionTypes from '../actionTypes/pages/registration';
 import * as LoadingActionCreators from '../actionCreators/loading';
 
-import { RootAction } from '../actionCreators';
+import { IRootAction } from '../actionCreators';
 
-const startLoadingEpic: Epic<RootAction, RootAction> = (action$) =>
+const startLoadingEpic: Epic<IRootAction, IRootAction> = (action$) =>
   action$.ofType(
     LoginActionTypes.SUBMIT_LOGIN_REQUEST,
     RegistrationActionTypes.SUBMIT_REGISTRATION_REQUEST,
@@ -15,7 +15,7 @@ const startLoadingEpic: Epic<RootAction, RootAction> = (action$) =>
     map(LoadingActionCreators.startLoading),
   );
 
-const FinishLoadingEpic: Epic<RootAction, RootAction> = (action$) =>
+const FinishLoadingEpic: Epic<IRootAction, IRootAction> = (action$) =>
   action$.ofType(
     LoginActionTypes.SUBMIT_LOGIN_FAILURE,
     LoginActionTypes.SUBMIT_LOGIN_SUCCESS,

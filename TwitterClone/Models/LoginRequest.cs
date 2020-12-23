@@ -8,6 +8,7 @@ namespace TwitterClone.Models
         [EmailAddress]
         public string Username { get; set; }
         [Required(ErrorMessage = "Password is required")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
     }
 }
