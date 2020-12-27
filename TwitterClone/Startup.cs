@@ -6,7 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+using TwitterClone.Context;
 using TwitterClone.Services.AuthService;
+using Microsoft.EntityFrameworkCore;
+using TwitterClone.Initializers;
 
 namespace TwitterClone
 {
@@ -23,6 +27,16 @@ namespace TwitterClone
         {
 
             services.AddControllersWithViews();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Twitter Clone", Version = "v1" });
+            });
+            
+            services.AddDbContext<TwitterCloneDbContext>(options => 
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultDbConnection")));
+            
+            // services.AddDatabaseDeveloperPageExceptionFilter();
             
             // services
             //     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -30,11 +44,6 @@ namespace TwitterClone
             //     {
             // options.Authority = Configuration.GetValue<string>("Auth0:Authority");
             //         options.Audience = Configuration.GetValue<string>("Auth0:Audience");
-            //         
-            //         // options.TokenValidationParameters = new TokenValidationParameters
-            //         // {
-            //         //     NameClaimType = ClaimTypes.NameIdentifier
-            //         // };
             //     });
             
             // services.AddAuthorization(options =>
@@ -50,7 +59,7 @@ namespace TwitterClone
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, TwitterCloneDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -62,11 +71,20 @@ namespace TwitterClone
                 app.UseHsts();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Twitter Clone API V1");
+            });
+            
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+            
+            TwitterCloneDbInitializer.Initialize(context);
             
             // app.UseAuthentication();
             // app.UseAuthorization();

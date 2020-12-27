@@ -16,9 +16,9 @@ namespace TwitterClone.Services.AuthService
         public AuthService(IConfiguration configuration)
         {
             _configuration = configuration;
+
             var domain = new Uri(_configuration.GetValue<string>("Auth:Domain"));
-            var client = new AuthenticationApiClient(domain);
-            _authenticationClient = client;
+            _authenticationClient = new AuthenticationApiClient(domain);
         }
 
         public async Task<SignupUserResponse> SignupUserAsync(RegistrationRequest userData)
@@ -26,6 +26,7 @@ namespace TwitterClone.Services.AuthService
             var signupUserRequest = new SignupUserRequest
             {
                 Email = userData.Username,
+                Username = userData.Username,
                 Password = userData.Password,
                 FamilyName = userData.LastName,
                 GivenName = userData.FirstName,
