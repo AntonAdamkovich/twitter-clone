@@ -11,6 +11,7 @@ using TwitterClone.Context;
 using TwitterClone.Services.AuthService;
 using Microsoft.EntityFrameworkCore;
 using TwitterClone.Initializers;
+using TwitterClone.Services.UserService;
 
 namespace TwitterClone
 {
@@ -52,6 +53,7 @@ namespace TwitterClone
             // });
 
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddSpaStaticFiles(configuration =>
             {

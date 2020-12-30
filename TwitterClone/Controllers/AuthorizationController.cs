@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -5,17 +6,19 @@ using Microsoft.EntityFrameworkCore;
 using TwitterClone.Context;
 using TwitterClone.Models;
 using TwitterClone.Services.AuthService;
+using TwitterClone.Services.UserService;
 
 namespace TwitterClone.Controllers
 {
     public class AuthorizationController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly TwitterCloneDbContext _dbContext;
-        public AuthorizationController(IAuthService authService, TwitterCloneDbContext context)
+        private readonly IUserService _userService;
+
+        public AuthorizationController(IAuthService authService, IUserService userService)
         {
             _authService = authService;
-            _dbContext = context;
+            _userService = userService;
         }
         
         [HttpPost]
@@ -27,11 +30,9 @@ namespace TwitterClone.Controllers
         }
         
         [HttpPost]
-        // [Authorize]
+        [Authorize]
         public async Task<ActionResult> Logout()
         {
-            var users = await _dbContext.Users.ToListAsync();
-
             return Ok();
         }
         
@@ -45,9 +46,17 @@ namespace TwitterClone.Controllers
         [HttpPost]
         public async Task<ActionResult> Registration([FromBody]RegistrationRequest userData)
         {
-            var user = await _authService.SignupUserAsync(userData);
+            if (ModelState.IsValid)
+            {
+                var auth0User = await _authService.SignupUserAsync(userData);
+                await _userService.CreateUserAsync(userData, auth0User.Id, new Uri(""));
 
-            return Ok();
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

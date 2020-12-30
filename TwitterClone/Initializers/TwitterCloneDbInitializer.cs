@@ -10,31 +10,34 @@ namespace TwitterClone.Initializers
     {
         public static void Initialize(TwitterCloneDbContext context)
         {
-            // if (context.Database.)
             if (context.Users.Any())
             {
                 return;
             }
 
-            var users = new List<User>();
+            var users = new List<User>
+            {
+                new User
+                {
+                    FirstName = "Marcus",
+                    LastName = "Aurelius",
+                    Username = "usernameq+1@email.com",
+                    AuthId = "auth0|5fe23f1bb2ac50006f70d02e",
+                    DateOfBirth = new DateTime(1986, 1, 12),
+                    ProfileImageUri = new Uri(""),
+                },
+                new User
+                {
+                    FirstName = "John",
+                    LastName = "Wick",
+                    Username = "usernameaaq+2@email.com",
+                    AuthId = "auth0|5fe24283128f9f00699b8d78",
+                    DateOfBirth = new DateTime(1993, 7, 22),
+                    ProfileImageUri = new Uri(""),
+                }
+            };
 
-            users.Add(new User
-            {
-                FirstName = "Marcus",
-                LastName = "Aurelius",
-                Username = "usernameq+1@email.com",
-                AuthId = "auth0|5fe23f1bb2ac50006f70d02e",
-                DateOfBirth = new DateTime(1986, 1, 12),
-            });
-            users.Add(new User
-            {
-                FirstName = "John",
-                LastName = "Wick",
-                Username = "usernameaaq+2@email.com",
-                AuthId = "auth0|5fe24283128f9f00699b8d78",
-                DateOfBirth = new DateTime(1993, 7, 22),
-            });
-            
+
             context.Users.AddRange(users);
             context.SaveChanges();
         }

@@ -14,5 +14,6 @@ namespace TwitterClone.Models.Database
         public string Username { get; set; }
         public string AuthId { get; set; }
         public DateTime DateOfBirth { get; set; }
+        public Uri ProfileImageUri { get; set; }
     }
 }

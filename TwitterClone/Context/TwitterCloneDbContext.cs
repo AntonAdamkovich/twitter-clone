@@ -9,13 +9,14 @@ namespace TwitterClone.Context
         {
         }
 
-        public Microsoft.EntityFrameworkCore.DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Relationship> Relationships { get; set; }
         
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        // protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // {
             // modelBuilder.Entity<User>()
             //     .Property(b => b.Id)
             //     .ValueGeneratedOnAdd();
-        }
+        // }
     }
 }
