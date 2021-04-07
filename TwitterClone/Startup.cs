@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -6,11 +7,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using TwitterClone.Context;
 using TwitterClone.Services.AuthService;
 using Microsoft.EntityFrameworkCore;
+using TwitterClone.Events;
 using TwitterClone.Initializers;
+using TwitterClone.Models.Database;
+using TwitterClone.Services.CommentService;
+using TwitterClone.Services.RelationshipService;
+using TwitterClone.Services.TweetService;
 using TwitterClone.Services.UserService;
 
 namespace TwitterClone
@@ -29,35 +36,41 @@ namespace TwitterClone
 
             services.AddControllersWithViews();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Twitter Clone", Version = "v1" });
-            });
-            
             services.AddDbContext<TwitterCloneDbContext>(options => 
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultDbConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString(TwitterCloneDbContext.ConnectionStringPropertyName)));
             
-            // services.AddDatabaseDeveloperPageExceptionFilter();
-            
-            // services
-            //     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //     .AddJwtBearer(options =>
-            //     {
-            // options.Authority = Configuration.GetValue<string>("Auth0:Authority");
-            //         options.Audience = Configuration.GetValue<string>("Auth0:Audience");
-            //     });
-            
-            // services.AddAuthorization(options =>
+            // services.AddCors(options =>
             // {
-            //     options.AddPolicy("read:messages", policy => policy.Requirements.Add(new HasScopeRequirement("read:messages", domain)));
+            //     options.AddDefaultPolicy(
+            //         builder =>
+            //         {
+            //             builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+            //         });
             // });
+            
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.EventsType = typeof(CustomCookieAuthenticationEvents);
+                });
 
+            services.AddHttpClient();
+            // services.AddIdentity<User, IdentityRole>();
+            services.AddScoped<CustomCookieAuthenticationEvents>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRelationshipService, RelationshipService>();
+            services.AddScoped<ITweetService, TweetService>();
+            services.AddScoped<ICommentService, CommentService>();
 
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
+            });
+            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Twitter Clone", Version = "v1" });
             });
         }
 
@@ -78,7 +91,6 @@ namespace TwitterClone
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Twitter Clone API V1");
             });
-            
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -88,8 +100,10 @@ namespace TwitterClone
             
             TwitterCloneDbInitializer.Initialize(context);
             
-            // app.UseAuthentication();
-            // app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
+            // app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

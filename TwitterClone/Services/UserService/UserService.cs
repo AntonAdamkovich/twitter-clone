@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TwitterClone.Context;
 using TwitterClone.Models;
@@ -31,6 +32,16 @@ namespace TwitterClone.Services.UserService
             await _dbContext.SaveChangesAsync();
 
             return user;
+        }
+
+        public async Task<User> FindUserByUsernameAsync(string username)
+        {
+            return _dbContext.Users.FirstOrDefault(user => user.Username == username);
+        }
+
+        public async Task<User> FindUserByAuthIdAsync(string authId)
+        {
+            return _dbContext.Users.FirstOrDefault(user => user.AuthId == authId);
         }
     }
 }

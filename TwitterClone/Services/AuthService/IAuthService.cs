@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Auth0.AuthenticationApi.Models;
 using TwitterClone.Models;
@@ -8,5 +9,6 @@ namespace TwitterClone.Services.AuthService
     {
         public Task<SignupUserResponse> SignupUserAsync(RegistrationRequest userdata);
         public Task<AccessTokenResponse> AuthenticateUserAsync(LoginRequest userData);
+        public Task<JwtSecurityToken> ValidateTokenAsync(string token);
     }
 }

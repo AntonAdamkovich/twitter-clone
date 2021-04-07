@@ -70,7 +70,7 @@ export default function({ onSubmit }: IRegistrationProps) {
             required: 'Please enter your password confirmation',
           })}
         />
-        <Button>submit</Button>
+        <Button type="submit">submit</Button>
       </StyledForm>
     </StyledPaper>
   )

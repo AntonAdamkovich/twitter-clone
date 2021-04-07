@@ -8,5 +8,7 @@ namespace TwitterClone.Services.UserService
     public interface IUserService
     {
         public Task<User> CreateUserAsync(RegistrationRequest userData, string authId, Uri profileImageUri);
+        public Task<User> FindUserByUsernameAsync(string username);
+        public Task<User> FindUserByAuthIdAsync(string authId);
     }
 }

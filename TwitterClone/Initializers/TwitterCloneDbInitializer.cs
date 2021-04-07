@@ -37,7 +37,6 @@ namespace TwitterClone.Initializers
                 }
             };
 
-
             context.Users.AddRange(users);
             context.SaveChanges();
         }

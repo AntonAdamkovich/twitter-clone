@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TwitterClone.Models.Database
 {
-    public class Relationship
+    public class Tweet
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public Guid Id { get; set; }
-        public User Follower { get; set; }
-        public User Followed { get; set; }
+        public User User { get; set; }
+        public string Text { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

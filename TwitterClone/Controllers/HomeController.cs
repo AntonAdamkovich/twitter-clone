@@ -1,13 +1,27 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TwitterClone.Models;
+using TwitterClone.Models.Database;
+using TwitterClone.Services.CommentService;
+using TwitterClone.Services.RelationshipService;
+using TwitterClone.Services.TweetService;
 
 namespace TwitterClone.Controllers
 {
     public class HomeController : ControllerBase
     {
-        public HomeController()
+        private readonly IRelationshipService _relationshipService;
+        private readonly ITweetService _tweetService;
+        private readonly ICommentService _commentService;
+
+        public HomeController(IRelationshipService relationshipService, ITweetService tweetService, ICommentService commentService)
         {
+            _relationshipService = relationshipService;
+            _tweetService = tweetService;
+            _commentService = commentService;
         }
 
         [Authorize]
@@ -20,14 +34,29 @@ namespace TwitterClone.Controllers
             });
         }
 
-        [Authorize]
         [HttpPost]
-        public async Task<ActionResult> AddTweet()
+        [Consumes("application/x-www-form-urlencoded")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CreateTweetResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<CreateTweetResponse>> CreateTweet([FromForm] CreateTweetRequest tweetData)
         {
-            return Ok(new
+            if (ModelState.IsValid)
             {
-                Message = "Hello from a AddTweet."
-            });
+                try
+                {
+                    var tweet = await _tweetService.CreateTweetAsync(tweetData, new User());
+                    return Ok(tweet);
+                }
+                catch (Exception)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [Authorize]

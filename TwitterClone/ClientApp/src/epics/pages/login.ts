@@ -15,7 +15,7 @@ const loginFlow: Epic<IRootAction, IRootAction> = (action$) =>
     filter(isActionOf(LoginActionCreators.submitLoginAsync.request)),
     pluck('payload'),
     switchMap(payload =>
-      ajax.post(Endpoints.LOGIN, payload).pipe(
+      ajax.post(Endpoints.LOGIN, payload, { 'Content-Type': 'application/x-www-form-urlencoded' }).pipe(
         map(LoginActionCreators.submitLoginAsync.success),
         catchError(error => of(LoginActionCreators.submitLoginAsync.failure(error))),
       )

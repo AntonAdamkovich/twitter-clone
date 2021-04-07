@@ -15,7 +15,7 @@ const registrationFlow: Epic<IRootAction, IRootAction> = (action$) =>
     filter(isActionOf(RegistrationActionCreators.submitRegistrationAsync.request)),
     pluck('payload'),
     switchMap(payload =>
-      ajax.post(Endpoints.REGISTRATION, payload).pipe(
+      ajax.post(Endpoints.REGISTRATION, payload, { 'Content-Type': 'application/x-www-form-urlencoded' }).pipe(
         map(RegistrationActionCreators.submitRegistrationAsync.success),
         catchError(error => of(RegistrationActionCreators.submitRegistrationAsync.failure(error))),
       )

@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TwitterClone.Context;
 using TwitterClone.Models;
 using TwitterClone.Services.AuthService;
 using TwitterClone.Services.UserService;
@@ -22,36 +25,93 @@ namespace TwitterClone.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult> Login([FromBody]LoginRequest userData)
+        // [AllowAnonymous]
+        [Consumes("application/x-www-form-urlencoded")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<LoginResponse>> Login([FromForm]LoginRequest userData)
         {
-            var tokenResponse = await _authService.AuthenticateUserAsync(userData);
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Console.WriteLine(HttpContext.User.Identity);
+                    var tokenResponse = await _authService.AuthenticateUserAsync(userData);
+                    var user = await _userService.FindUserByUsernameAsync(userData.Username);
 
-            return Ok();
+                    if (user == null)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError);
+                    }
+                    
+                    // create custom cookie with ID token
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Authentication, tokenResponse.IdToken),
+                    };
+                    var claimsIdentity = new ClaimsIdentity(
+                        claims, 
+                        CookieAuthenticationDefaults.AuthenticationScheme);
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme, 
+                        new ClaimsPrincipal(claimsIdentity));
+                    
+                    var response = new LoginResponse(user);
+            
+                    return Ok(response);
+                }
+                catch (Exception e)
+                {
+                    // TODO: generate understandable error and log it
+                    return StatusCode(StatusCodes.Status500InternalServerError);   
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
         
         [HttpPost]
-        [Authorize]
         public async Task<ActionResult> Logout()
         {
             return Ok();
         }
         
         [HttpPost]
-        [Authorize]
+        [Consumes("application/x-www-form-urlencoded")]
+        // [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> ChangePassword()
         {
             return Ok();
         }
 
         [HttpPost]
-        public async Task<ActionResult> Registration([FromBody]RegistrationRequest userData)
+        [AllowAnonymous]
+        [Consumes("application/x-www-form-urlencoded")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegistrationResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<RegistrationResponse>> Registration([FromForm]RegistrationRequest userData)
         {
             if (ModelState.IsValid)
             {
-                var auth0User = await _authService.SignupUserAsync(userData);
-                await _userService.CreateUserAsync(userData, auth0User.Id, new Uri(""));
+                try
+                {
+                    var auth0User = await _authService.SignupUserAsync(userData);
+                    var user = await _userService.CreateUserAsync(userData, auth0User.Id, new Uri("http://mock.com"));
+                    var response = new RegistrationResponse(user);
 
-                return Ok();
+                    return Ok(response);
+                }
+                catch (Exception)
+                {
+                    // TODO: generate understandable error and log it
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
             }
             else
             {

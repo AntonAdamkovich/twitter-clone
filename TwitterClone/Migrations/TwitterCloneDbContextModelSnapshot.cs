@@ -19,6 +19,33 @@ namespace TwitterClone.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
+            modelBuilder.Entity("TwitterClone.Models.Database.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TweetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TweetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("TwitterClone.Models.Database.Relationship", b =>
                 {
                     b.Property<Guid>("Id")
@@ -28,15 +55,41 @@ namespace TwitterClone.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("FollowedId")
+                    b.Property<Guid?>("FollowedId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("FollowerId")
+                    b.Property<Guid?>("FollowerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FollowedId");
+
+                    b.HasIndex("FollowerId");
+
                     b.ToTable("Relationships");
+                });
+
+            modelBuilder.Entity("TwitterClone.Models.Database.Tweet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tweets");
                 });
 
             modelBuilder.Entity("TwitterClone.Models.Database.User", b =>
@@ -66,6 +119,45 @@ namespace TwitterClone.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TwitterClone.Models.Database.Comment", b =>
+                {
+                    b.HasOne("TwitterClone.Models.Database.Tweet", "Tweet")
+                        .WithMany()
+                        .HasForeignKey("TweetId");
+
+                    b.HasOne("TwitterClone.Models.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Tweet");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TwitterClone.Models.Database.Relationship", b =>
+                {
+                    b.HasOne("TwitterClone.Models.Database.User", "Followed")
+                        .WithMany()
+                        .HasForeignKey("FollowedId");
+
+                    b.HasOne("TwitterClone.Models.Database.User", "Follower")
+                        .WithMany()
+                        .HasForeignKey("FollowerId");
+
+                    b.Navigation("Followed");
+
+                    b.Navigation("Follower");
+                });
+
+            modelBuilder.Entity("TwitterClone.Models.Database.Tweet", b =>
+                {
+                    b.HasOne("TwitterClone.Models.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
